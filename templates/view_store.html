@@ -6,7 +6,7 @@
         <h2>{{ store.name }}</h2>
         <div class="store-buttons">
             {% if is_owner %}
-            <a href="/edit_store/{{ store.id }}" class="action-button">
+            <a href="/edit_store/{{ store.id }}" class="add-product">
                 <i class="fas fa-pencil-alt"></i> <!-- Icono de lápiz -->
             </a>
             {% elif user.is_admin %}
@@ -84,7 +84,7 @@
     <h3>Productos</h3>
     <div class="product-buttons">
         {% if is_owner %}
-        <a href="/add_product/{{ store.id }}" class="action-button">
+        <a href="/add_product/{{ store.id }}" class="add-product">
             <i class="fas fa-plus"></i> <!-- Icono de agregar -->
             Agregar Producto
         </a>
@@ -101,7 +101,7 @@
             </div>
             {% if is_owner %}
             <div class="product-actions">
-                <a href="/edit_product/{{ product.id }}" class="action-button">
+                <a href="/edit_product/{{ product.id }}" class="add-product">
                     <i class="fas fa-pencil-alt"></i> <!-- Icono de lápiz -->
                 </a>
                 <form action="/delete_product/{{ product.id }}" method="POST" style="display:inline;">

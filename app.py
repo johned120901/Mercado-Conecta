@@ -603,11 +603,6 @@ def unsuspend_store(store_id):
     db.session.commit()
     return redirect('/admin/stores')
 
-
-
-
-
-
 # Iniciar la aplicación y crear las tablas de la base de datos si no existen
 if __name__ == '__main__':
     with app.app_context():
