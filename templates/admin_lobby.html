@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Panel de Administración{% endblock %}
+{% block content %}
+<h2>Panel de Administración</h2>
+<p>Bienvenido al panel de administración. Desde aquí puedes gestionar usuarios, tiendas, noticias y comentarios.</p>
+
+<div class="admin-panel-container">
+    <a href="/admin/users" class="button-link">Administrar Usuarios</a>
+    <a href="/admin/stores" class="button-link">Administrar Tiendas</a>
+</div>
+{% endblock %}

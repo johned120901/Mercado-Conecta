@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Inicio{% endblock %}
+{% block content %}
+<div class="news-container">
+    <h2>Últimas Noticias</h2>
+    <ul class="news-list">
+        {% for news in recent_news %}
+        {% if news.is_active %}
+        <li class="news-item">
+            <div class="news-header">
+                <p class="news-store">
+                    <strong><a href="/store/{{ news.store_id }}" class="store-link">{{ news.store.name }}</a></strong>
+                    ha publicado:
+                </p>
+                <h3 class="news-title">{{ news.title }}</h3>
+                {% if user.is_admin %}
+                <form action="/admin/disable_news/{{ news.id }}" method="POST" class="ban-form">
+                    <button type="submit" class="ban-button"
+                        onclick="return confirm('¿Estás seguro de que deseas inhabilitar esta noticia?');">
+                        <i class="fas fa-ban"></i> <!-- Icono de prohibido -->
+                    </button>
+                </form>
+                {% endif %}
+            </div>
+
+            {% if news.is_active %}
+            <p class="news-content">{{ news.content | safe }}</p>
+            <p class="news-date"><em>Publicado el {{ news.published_date.strftime('%Y-%m-%d %H:%M') }}</em></p>
+            {% else %}
+            <p><strong>La noticia ya no se encuentra disponible.</strong></p>
+            {% endif %}
+
+            <h4>Comentarios:</h4>
+            <ul class="comment-list">
+                {% for comment in comments[news.id] %}
+                <li class="comment-item">
+                    {% if comment.is_active %}
+                    <a href="/profile/{{ comment.user.id }}" class="user-link">{{ comment.user.username }}</a>: {{
+                    comment.content }}
+                    {% if user.is_admin %}
+                    <form action="/admin/disable_comment/{{ comment.id }}" method="POST" style="display:inline;">
+                        <button type="submit" class="ban-button"
+                            onclick="return confirm('¿Estás seguro de que deseas inhabilitar este comentario?');">
+                            <i class="fas fa-ban"></i> <!-- Icono de prohibido -->
+                        </button>
+                    </form>
+                    {% endif %}
+                    {% else %}
+                    <p><strong>Comentario inhabilitado.</strong></p>
+                    {% endif %}
+                </li>
+                {% else %}
+                <li>No hay comentarios aún.</li>
+                {% endfor %}
+            </ul>
+
+            {% if 'user_id' in session %}
+            <form action="/comment/{{ news.id }}" method="POST">
+                <input type="hidden" name="store_id" value="{{ news.store_id }}">
+                <textarea name="comment" class="input-comment" placeholder="Escribe tu comentario..."
+                    required></textarea>
+                <button type="submit" class="comment-button">Agregar Comentario</button>
+            </form>
+            {% endif %}
+        </li>
+        {% else %}
+        <li><em>La noticia no se encuentra disponible.</em></li>
+        {% endif %}
+        {% else %}
+        <li>No hay noticias aún.</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

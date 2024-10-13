@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="{{ url_for('static', filename='app.js') }}"></script> <!-- Incluir app.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>{% block title %}App Mercado Conecta{% endblock %}</title>
+</head>
+
+<body>
+    <header>
+        <h1>Aplicación de Vecindario</h1>
+        <nav>
+            <ul>
+                <li><a href="/">Noticias Recientes</a></li>
+                {% if user %}
+                <li><a href="/profile">Perfil</a></li>
+                {% if user.is_admin == false %}
+                <li><a href="/favorites">Favoritos</a></li>
+                {% endif %}
+                <li><a href="/stores">Tiendas</a></li>
+                <li><a href="/logout">Cerrar sesión</a></li>
+                {% else %}
+                <li><a href="/login">Iniciar sesión</a></li>
+                <li><a href="/register">Registrarse</a></li>
+                {% endif %}
+                {% if user and user.is_admin %}
+                <li><a href="/admin">Administración</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    <footer>
+        <p>&copy; 2024 App Vecindario</p>
+    </footer>
+</body>
+
+</html>

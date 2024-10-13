@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Iniciar Sesión{% endblock %}
+{% block content %}
+<div class="form-container">
+    <h2>Iniciar Sesión</h2>
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <ul class="flashes">
+          {% for category, message in messages %}
+            <li class="{{ category }}">{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    <form action="/login" method="POST">
+        <label for="username">Usuario</label>
+        <input type="text" id="username" name="username" class="input-login" required>
+        
+        <label for="password">Contraseña</label>
+        <input type="password" id="password" name="password" class="input-login" required>
+        
+        <button type="submit" class="button-link">Ingresar</button>  <!-- Clase para el botón -->
+    </form>
+    <p>¿No tienes cuenta? <a href="/register"  class="store-link">Regístrate aquí</a></p>  <!-- Estilo para el enlace de registro -->
+</div>
+{% endblock %}

@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Perfil{% endblock %}
+{% block content %}
+<div class="profile-container">
+    <div class="profile-header">
+        <h2>{{ user.username }}</h2>
+        
+        <!-- Si el usuario es administrador y no es el propio perfil -->
+        {% if session['user_is_admin'] == true and user.id != session['user_id'] %}
+            {% if user.suspended_until %}
+            <form action="/admin/unsuspend_user/{{ user.id }}" method="POST" style="display:inline;">
+                <button type="submit" class="action-button" title="Quitar Baneo"
+                    onclick="return confirm('¿Estás seguro de que deseas quitar el baneo a este usuario?');">
+                    <i class="fas fa-unlock"></i> <!-- Icono de desbloquear -->
+                </button>
+            </form>
+            {% else %}
+            <form action="/admin/suspend_user/{{ user.id }}" method="POST" style="display:inline;">
+                <button type="submit" class="action-button" title="Banear"
+                    onclick="return confirm('¿Estás seguro de que deseas suspender a este usuario?');">
+                    <i class="fas fa-ban"></i> <!-- Icono de prohibido -->
+                </button>
+            </form>
+            {% endif %}
+        {% elif user.id == session['user_id'] %}
+        <a href="/edit_profile" class="edit-icon">
+            <i class="fas fa-pencil-alt"></i> <!-- Icono de lápiz -->
+        </a>
+        {% endif %}
+    </div>
+
+    <div class="profile-card">
+        <div class="profile-info">
+            <div class="info-item">
+                <strong>Nombre:</strong> {{ user.first_name }} {{ user.last_name }}
+            </div>
+            <div class="info-item">
+                <strong>Fecha de Nacimiento:</strong> {{ user.birth_date.strftime('%d/%m/%Y') if user.birth_date else 'No especificada' }}
+            </div>
+            <div class="info-item">
+                <strong>Email:</strong> {{ user.email }}
+            </div>
+            <div class="info-item">
+                <strong>Teléfono:</strong> {{ user.phone }}
+            </div>
+        </div>
+    </div>
+
+    <!-- Si el usuario tiene tiendas -->
+    <h3>Tiendas</h3>
+    <div class="store-profile">
+        {% for store in user.stores %}
+        <div class="store-card">
+            {% if store.suspended_until %}
+            <div class="two-columns">
+                <h3>{{ store.name }}</h3>
+                <strong><p class="suspended-message">Esta tienda está temporalmente suspendida.</p></strong>
+                <p class="store-description">{{ store.description }}</p>
+                <p class="store-address">{{ store.address }}</p>
+                <p class="store-rating">Calificación: {{ store.rating | round(1) }}</p>
+            </div>
+            {% else %}
+            <div class="two-columns">
+                <a href="/store/{{ store.id }}" class="store-card-link">
+                    <h3>{{ store.name }}</h3>
+                    <p class="store-description">{{ store.description }}</p>
+                    <p class="store-address">{{ store.address }}</p>
+                    <p class="store-rating">Calificación: {{ store.rating | round(1) }}</p>
+                </a>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Mostrar opción de crear tienda solo si es el propio perfil del usuario y no es administrador -->
+    {% if user.is_admin == false and user.id == session['user_id'] %}
+    <a href="/create_store" class="button-link">Crear Nueva Tienda</a>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+{% block title %}Tienda: {{ store.name }}{% endblock %}
+{% block content %}
+<div class="store-container">
+    <div class="store-header">
+        <h2>{{ store.name }}</h2>
+        <div class="store-buttons">
+            {% if is_owner %}
+            <a href="/edit_store/{{ store.id }}" class="action-button">
+                <i class="fas fa-pencil-alt"></i> <!-- Icono de lápiz -->
+            </a>
+            {% elif user.is_admin %}
+            <!-- Verificar si la tienda está suspendida -->
+            {% if store.suspended_until %}
+            <form action="/admin/unsuspend_store/{{ store.id }}" method="POST" style="display:inline;">
+                <button type="submit" class="action-button"
+                    onclick="return confirm('¿Estás seguro de que deseas quitar la suspensión de esta tienda?');">
+                    <i class="fas fa-unlock"></i> <!-- Icono de desbloquear -->
+                </button>
+            </form>
+            {% else %}
+            <form action="/admin/suspend_store/{{ store.id }}" method="POST" style="display:inline;">
+                <button type="submit" class="action-button"
+                    onclick="return confirm('¿Estás seguro de que deseas suspender esta tienda?');">
+                    <i class="fas fa-ban"></i> <!-- Icono de prohibido -->
+                </button>
+            </form>
+            {% endif %}
+            {% endif %}
+            {% if not user.is_admin and not is_owner %}
+            <div class="favorite-store">
+                {% if is_favorite %}
+                <form action="/remove_favorite/{{ store.id }}" method="POST">
+                    <button type="submit" class="favorite-button">
+                        <i class="fas fa-star"></i> <!-- Estrella llena -->
+                    </button>
+                </form>
+                {% else %}
+                <form action="/add_favorite/{{ store.id }}" method="POST">
+                    <button type="submit" class="favorite-button">
+                        <i class="far fa-star"></i> <!-- Estrella vacía -->
+                    </button>
+                </form>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if store.suspended_until %}
+    <p class="suspended-message">Esta tienda está temporalmente inaccesible hasta {{
+        store.suspended_until.strftime('%Y-%m-%d %H:%M') }}.</p>
+    {% endif %}
+
+    <div class="store-info card">
+        <div class="info-grid">
+            <div class="info-item">
+                <strong>Descripción:</strong>
+                <p>{{ store.description }}</p>
+            </div>
+            <div class="info-item">
+                <strong>Dirección:</strong>
+                <p>{{ store.address }}</p>
+            </div>
+            <div class="info-item">
+                <strong>Calificación:</strong>
+                <p>
+                    {% if is_owner %}
+                    {{ store.rating | round(1) }}/5
+                    {% else %}
+                <form action="/rate_store/{{ store.id }}" method="POST">
+                    <label for="rating">Calificación:</label>
+                    <span id="rating-value">{{ store.rating | round(1) }}</span>
+                    <input type="range" id="rating" name="rating" min="1" max="5" step="0.1"
+                        value="{{ store.rating | round(1) }}" oninput="updateRatingValue(this.value)">
+                    <button type="submit">Enviar Calificación</button>
+                </form>
+                {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <h3>Productos</h3>
+    <div class="product-buttons">
+        {% if is_owner %}
+        <a href="/add_product/{{ store.id }}" class="action-button">
+            <i class="fas fa-plus"></i> <!-- Icono de agregar -->
+            Agregar Producto
+        </a>
+        {% endif %}
+    </div>
+    <ul class="product-list">
+        {% for product in products %}
+        <li class="product-item">
+            <div class="product-details">
+                <span class="product-name">{{ product.name }}</span>
+                <span class="product-price">
+                    $ {{ '{:,.0f}'.format(product.price) }} COP
+                </span>
+            </div>
+            {% if is_owner %}
+            <div class="product-actions">
+                <a href="/edit_product/{{ product.id }}" class="action-button">
+                    <i class="fas fa-pencil-alt"></i> <!-- Icono de lápiz -->
+                </a>
+                <form action="/delete_product/{{ product.id }}" method="POST" style="display:inline;">
+                    <button type="submit" class="action-button"
+                        onclick="return confirm('¿Estás seguro de que deseas eliminar este producto?');">
+                        <i class="fas fa-trash-alt"></i> <!-- Icono de papelera -->
+                    </button>
+                </form>
+            </div>
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+
+    <h3>Últimas Noticias</h3>
+    <ul class="news-list">
+        {% for new in news %}
+        {% if new.is_active %}
+        <li class="news-item">
+            <h4>{{ new.title }}</h4>
+            <p>{{ new.content | safe }}</p>
+            <p><em>Publicado el {{ new.published_date.strftime('%Y-%m-%d %H:%M') }}</em></p>
+
+            {% if user.is_admin %}
+            <div class="news-actions">
+                <form action="/admin/disable_news/{{ new.id }}" method="POST" style="display:inline;">
+                    <button type="submit" class="action-button"
+                        onclick="return confirm('¿Estás seguro de que deseas inhabilitar esta noticia?');">
+                        <i class="fas fa-ban"></i> <!-- Icono de prohibido -->
+                    </button>
+                </form>
+            </div>
+            {% endif %}
+
+            <h4>Comentarios:</h4>
+            <ul class="comment-list">
+                {% if new.comments %}
+                {% for comment in new.comments %}
+                {% if comment.is_active %}
+                <li class="comment-item">
+                    <a href="/profile/{{ comment.user.id }}" class="user-link">{{ comment.user.username }}</a>: {{ comment.content }}
+                    {% if user.is_admin %}
+                    <div class="comment-actions">
+                        <form action="/admin/disable_comment/{{ comment.id }}" method="POST" style="display:inline;">
+                            <button type="submit" class="action-button"
+                                onclick="return confirm('¿Estás seguro de que deseas inhabilitar este comentario?');">
+                                <i class="fas fa-ban"></i> <!-- Icono de prohibido -->
+                            </button>
+                        </form>
+                    </div>
+                    {% endif %}
+                </li>
+                {% else %}
+                <p><strong>Comentario inhabilitado.</strong></p>
+                {% endif %}
+                {% endfor %}
+                {% else %}
+                <li>No hay comentarios aún.</li>
+                {% endif %}
+            </ul>
+
+            {% if 'user_id' in session %}
+            <form action="/comment/{{ new.id }}" method="POST">
+                <textarea name="comment" class="input-comment" placeholder="Escribe tu comentario..."
+                    required></textarea>
+                <button type="submit">Agregar Comentario</button>
+            </form>
+            {% endif %}
+        </li>
+        {% else %}
+        <li><em>La noticia no se encuentra disponible.</em></li>
+        {% endif %}
+        {% else %}
+        <li>No hay noticias aún.</li>
+        {% endfor %}
+    </ul>
+
+</div>
+{% endblock %}

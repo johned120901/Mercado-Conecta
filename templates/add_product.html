@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Agregar Productos{% endblock %}
+{% block content %}
+<div class="form-container">
+    <h3>Agregar un nuevo producto a la tienda seleccionada</h3>
+    <form action="/add_product/{{ selected_store_id }}" method="POST">
+        <input type="hidden" name="store_id" value="{{ selected_store_id }}">
+        
+        <div id="product-list">
+            <div class="form-product-item">
+                <label for="name">Nombre del Producto</label>
+                <input type="text" id="name" name="name[]" required>
+    
+                <label for="price">Precio (en pesos colombianos)</label>
+                <input type="text" id="price" name="price[]" required oninput="formatCurrency(this)">
+            </div>
+        </div>
+    
+        <button type="button" onclick="addProduct()">Agregar Otro Producto</button>
+        <button type="submit">Agregar Productos</button>
+    </form>    
+</div>
+{% endblock %}

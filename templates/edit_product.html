@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Editar Producto{% endblock %}
+{% block content %}
+<div class="form-container">
+    <h2>Editar Producto</h2>
+    <form action="/edit_product/{{ product.id }}" method="POST">
+        <div id="product-list">
+            <div class="form-product-item">
+                <label for="name">Nombre del Producto</label>
+                <input type="text" id="name" name="product_name" value="{{ product.name }}" required>
+
+                <label for="price">Precio (en pesos colombianos)</label>
+                <input type="text" id="price" name="product_price" value="{{ product.price }}" required
+                    oninput="formatCurrency(this)">
+            </div>
+            <button type="submit">Guardar Cambios</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

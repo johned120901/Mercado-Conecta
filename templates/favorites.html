@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Favoritos{% endblock %}
+{% block content %}
+<div class="favorites-container">
+    <h2>Tus Tiendas Favoritas</h2>
+    {% if favorite_stores %}
+    {% for store in favorite_stores %}
+    <div class="store-card">
+        {% if store.suspended_until %}
+        <p class="suspended-message">Esta tienda está temporalmente suspendida.</p>
+        <h3>{{ store.name }}</h3>
+        <p class="store-description">{{ store.description }}</p>
+        <p class="store-address">{{ store.address }}</p>
+        <p class="store-rating">Calificación: {{ store.rating | round(1) }}</p>
+        {% else %}
+        <a href="/store/{{ store.id }}" class="store-card-link">
+            <h3>{{ store.name }}</h3>
+            <p class="store-description">{{ store.description }}</p>
+            <p class="store-address">{{ store.address }}</p>
+            <p class="store-rating">Calificación: {{ store.rating | round(1) }}</p>
+        </a>
+        {% endif %}
+    </div>
+    {% endfor %}
+    {% else %}
+    <p>No tienes tiendas favoritas.</p>
+    {% endif %}
+</div>
+{% endblock %}

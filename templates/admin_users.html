@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Administrar Usuarios{% endblock %}
+{% block content %}
+<h2>Lista de Usuarios</h2>
+
+<div class="user-card-container">
+    {% for user in users %}
+    <div class="user-card">
+        <a href="/profile/{{ user.id }}" class="user-card-link">
+            <div class="user-info">
+                <h3>{{ user.first_name }} {{ user.last_name }}</h3>
+                <p>{{ user.username }}</p>
+            </div>
+        </a>
+        
+        <div class="user-actions">
+            {% if user.suspended_until %}
+            <form action="/admin/unsuspend_user/{{ user.id }}" method="POST">
+                <button type="submit" class="action-button ban-button" title="Quitar Baneo">
+                    <i class="fas fa-unlock"></i>
+                </button>
+            </form>
+            {% else %}
+            <form action="/admin/suspend_user/{{ user.id }}" method="POST">
+                <button type="submit" class="action-button ban-button" title="Banear">
+                    <i class="fas fa-ban"></i>
+                </button>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

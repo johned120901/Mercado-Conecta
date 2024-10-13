@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Administrar Tiendas{% endblock %}
+{% block content %}
+<h2>Lista de Tiendas</h2>
+
+<div class="store-list">
+    {% for store in stores %}
+    <div class="store-card">
+        <!-- Botones de acción para banear o desbanear, en la esquina superior derecha -->
+        <div class="store-actions">
+            {% if store.suspended_until %}
+            <form action="/admin/unsuspend_store/{{ store.id }}" method="POST" style="display:inline;">
+                <button type="submit" class="action-button" title="Desbanear Tienda">
+                    <i class="fas fa-unlock"></i> <!-- Icono de desbloquear -->
+                </button>
+            </form>
+            {% else %}
+            <form action="/admin/suspend_store/{{ store.id }}" method="POST" style="display:inline;">
+                <button type="submit" class="action-button" title="Banear Tienda">
+                    <i class="fas fa-ban"></i> <!-- Icono de prohibido -->
+                </button>
+            </form>
+            {% endif %}
+        </div>
+
+        <!-- Información de la tienda en la tarjeta -->
+        <a href="/store/{{ store.id }}" class="store-card-link">
+            <h3>{{ store.name }}</h3>
+            <p class="store-description">{{ store.description }}</p>
+            <p class="store-address">{{ store.address }}</p>
+        </a>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}
